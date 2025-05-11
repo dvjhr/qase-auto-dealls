@@ -1,6 +1,5 @@
 # QA Software Engineer HRIS Case Study
-## Author: 
-Dava Aditya Jauhar [LinkedIn](https://linkedin.com/in/dvjhr)
+This repo contains the case study assignment of **Dealls Jobs - QA Software Engineer / SDET Challenge**
 
 ## Challenge 1: Automation Testing (Technical Skills)
 1. Test Type
@@ -14,30 +13,59 @@ Dava Aditya Jauhar [LinkedIn](https://linkedin.com/in/dvjhr)
 - Test will be conducted in [dev](https://job-portal-user-dev-skx7zw44dq-et.a.run.app) environment
 - "Mentoring" backend already developed
 3. Possible High-level Test Scenario
-- Mentor discovery
-  - Search by keyword
-    - Mentor name
-    - Pengalaman
-    - Nama perusahaan
-    - Topik keahlian
-    - Pendidikan
-  - Filter
-    - Kategori
-  - Sort
-    - Terbaru
-- Mentoring session booking system (login and not login)
-  - Data and details verification
-- View mentoring session status (login and not login)
-  - Session details verification
+```
+Mentor Discovery
+  │
+  ├── Search by Keyword
+  │   ├── Mentor Name
+  │   ├── Pengalaman
+  │   ├── Nama Perusahaan
+  │   ├── Topik Keahlian
+  │   └── Pendidikan
+  │
+  ├── Filter
+  │   └── Kategori
+  │
+  ├── Sort
+  │   └── Terbaru
+  │
+Mentoring Session Booking System (Login and Not Login)
+  │
+  ├── Data and Details Verification
+  │
+View Mentoring Session Status (Login and Not Login)
+  │
+  └── Session Details Verification
+```
 
 More about test scenario and case [here](https://docs.google.com/spreadsheets/d/1HOM_2t4fW8yrT3bHC-Pq-wNTqHChrXVuUsHEsHIEPo4/edit?usp=sharing) 
 
 ## Challenge 2: UI Automation - Web Scenarios (Cypress/Playwright)
-Environment Specification:
-- Windows 10 XX.xx
-- Firefox XX.xx
-- Edge XX.xx
-- Chromium XX.xx
-- Playwright XX.xx
+### Test Environment Specification:
+- Windows 10 `XX.xx`
+- Firefox `XX.xx`
+- Edge `XX.xx`
+- Chromium `XX.xx`
+- Playwright `XX.xx`
+- Environment [site](https://job-portal-user-dev-skx7zw44dq-et.a.run.app)
 
+### How to run the test:
+1. Install dependencies (skip if already)
+- Node.js [official site](https://nodejs.org/en/download)
+- Playwright [official site](https://playwright.dev/docs/intro)
+2. Clone this repository
+```bash
+git clone https://github.com/dvjhr/qase-auto-dealls.git
+```
+3. Move to the project directory
+```bash
+cd qase-auto-dealls
+```
+4. Run the test
+```bash
+npx playwright test
+```
 ## Challenge 3: Exploration & Bug
+
+## Author: 
+Dava Aditya Jauhar [LinkedIn](https://linkedin.com/in/dvjhr)
