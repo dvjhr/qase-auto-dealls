@@ -8,7 +8,6 @@ import { expect } from '@playwright/test';
  * @param {string} tabText - Visible text of the tab to click
  */
 export async function clickAndCheckTab(page, tabText) {
-    //   const tab = page.getByRole('link', { name: tabText });
     const tab = page.locator(`//a[normalize-space(text()) = "${tabText}"]`);
     const highlightedClassRegex = /!text-tertiary-violet-50 bg-tertiary-violet-0/;
 
@@ -22,12 +21,13 @@ export async function clickAndCheckTab(page, tabText) {
             await expect(tab).toHaveClass(highlightedClassRegex, { timeout: 1000 });
             return;
         } catch {
+            console.log(`Attempt ${attempts} failed, retrying...`);
+            await page.waitForTimeout(500);
         }
     }
 
-    console.log(tab.getAttribute('class'));
+    // Final assertion to fail the test if not highlighted
     await expect(tab).toHaveClass(highlightedClassRegex);
-    if (attempts === maxAttempts && !tab.getAttribute('class').match(highlightedClassRegex)) {
-        console.error(`Tab "${tabText}" did not become highlighted after ${maxAttempts} attempts.`);
-    }
+    console.log(`Final class retrieved: ${tab.getAttribute('class')}`);
+    throw new Error(`Tab "${tabText}" did not become highlighted after ${maxAttempts} attempts.`);
 }
