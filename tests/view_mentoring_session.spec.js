@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { loginWithCred } from './helpers/login.js';
 
 test.describe('View Mentoring Session', {
-    tag: ['@mentoring', '@view-mentoring-session'],
+    tag: ['@mentoring', '@view_mentoring_session'],
 }, () => {
     
     test('MNT_VMS_001 - View mentoring booking status WITHOUT login', async ({ page }, testInfo) => {
