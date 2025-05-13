@@ -40,7 +40,7 @@ Mentor Discovery
   │
   ├── View Mentor Details
   │
-Mentoring Session Booking System (Login and Not Login)
+Mentoring Session Booking (Login and Not Login)
   │
   ├── Data and Details
   │
@@ -57,7 +57,7 @@ View Mentoring Session Status (Login and Not Login)
 - Firefox `XX.xx`
 - Edge `XX.xx`
 - Chromium `XX.xx`
-- Playwright `1.52.0`
+- Playwright (Javascript) `1.52.0`
 - App Environment [site](https://job-portal-user-dev-skx7zw44dq-et.a.run.app)
 
 ### How to run the test:

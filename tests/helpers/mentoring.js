@@ -19,7 +19,7 @@ export async function clickAndCheckTab(page, tabText) {
         attempts++;
         try {
             await expect(tab).toHaveClass(highlightedClassRegex, { timeout: 1000 });
-            return;
+            return true;
         } catch {
             console.log(`Attempt ${attempts} failed, retrying...`);
             await page.waitForTimeout(500);
@@ -29,5 +29,5 @@ export async function clickAndCheckTab(page, tabText) {
     // Final assertion to fail the test if not highlighted
     await expect(tab).toHaveClass(highlightedClassRegex);
     console.log(`Final class retrieved: ${tab.getAttribute('class')}`);
-    throw new Error(`Tab "${tabText}" did not become highlighted after ${maxAttempts} attempts.`);
+    return false;
 }
