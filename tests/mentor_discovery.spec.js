@@ -326,5 +326,9 @@ test.describe('Mentor Discovery', {
                 `createdAt values are not sorted correctly. ${createdAtList[i - 1]} should be >= ${createdAtList[i]}`);
         }
     });
+    
+    test.afterEach(async ({ page }) => {
+        await page.close();
+    });
 
 });
