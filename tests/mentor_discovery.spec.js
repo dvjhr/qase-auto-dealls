@@ -224,8 +224,19 @@ test.describe('Mentor Discovery', {
         );
 
         // *** Perform the actions that should trigger the network request ***
-        await searchInput.click();
-        console.log(`Search input class: ${await searchInput.getAttribute('class')}`);
+        let index = 0;
+        let flag = false;
+        let searchVal = '';
+        while (!flag) {
+            await searchInput.click();
+            console.log(`Search input class: ${await searchInput.getAttribute('class')}`);
+            searchVal = await searchInput.getAttribute('class');
+            if (searchVal.toString().includes('text-tertiary-violet-50')) {
+                flag = true;
+            }
+            await page.waitForTimeout(1000);
+            index++
+        }
         await page.waitForURL('**/mentoring?mCategory=*');
         await expect(page.url()).toContain('mCategory');
         await page.waitForLoadState()
