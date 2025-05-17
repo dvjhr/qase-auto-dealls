@@ -4,11 +4,11 @@ This repo contains the case study assignment of **Dealls Jobs - QA Software Engi
 ## Challenge 1: Automation Testing (Technical Skills)
 ### 1. Test Type
 - **Exploratory Test**
-  - 
+  - *tba*
 - **Functional Test**
   - *Ensuring all features work as expected*
 - **Validation Test**
-  - 
+  - *tba*
 - **UI Testing**
   - *Verifying visual elements, layout, responsiveness, and consistency of the mentoring feature flow*
 - **Integration Test**
@@ -54,9 +54,7 @@ View Mentoring Session Status (Login and Not Login)
 ## Challenge 2: UI Automation - Web Scenarios
 ### Test Environment Specification:
 - Windows 10 `22H2`
-- Firefox `XX.xx`
-- Edge `XX.xx`
-- Chromium `XX.xx`
+- Chromium `136.0.7103.25`
 - Playwright (Javascript) `1.52.0`
 - App Environment [site](https://job-portal-user-dev-skx7zw44dq-et.a.run.app)
 
