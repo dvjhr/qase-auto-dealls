@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { clickAndCheckTab } from './helpers/mentoring.js';
 
 test.describe('Mentor Discovery', {
-    tag: ['@mentoring', '@mentor-discovery'],
+    tag: ['@mentoring', '@mentor_discovery'],
 }, () => {
 
     test('MNT_MDK_001 - Find mentor by VALID nama mentor', async ({ page }, testInfo) => {
@@ -26,52 +26,71 @@ test.describe('Mentor Discovery', {
 
         await page.goto('/mentoring');
 
+        // *** Start waiting for the specific response BEFORE the actions that trigger it ***
         const responsePromise = page.waitForResponse(response => {
-            const url = new URL(response.url());
+            // 1. Check if the URL path matches exactly
+            const url = new URL(response.url()); // Use URL object for easier parsing
             if (url.pathname !== expectedApiUrlPath) {
-                return false;
+                return false; // Not the correct API endpoint path
             }
 
+            // 2. Check if the search parameter matches the term we entered
+            // Use searchParams.get() for reliable parameter checking
             if (url.searchParams.get('search')?.toLowerCase() !== searchTerm.toLowerCase()) {
-                return false;
+                return false; // Search term doesn't match what we typed
             }
 
+            // 3. Optional: Check method and status
             if (response.request().method() !== 'GET') {
-                return false;
+                return false; // Not a GET request
             }
+            // We might want to wait even if the response is not ok() yet,
+            // and check ok() status later in the assertions.
+            // But filtering here ensures we wait *only* for a successful search request.
             if (!response.ok()) {
-                return false;
+                return false; // Not a successful response (2xx status)
             }
 
-            console.log(`---> Matched Response URL: ${response.url()}`);
+            // If all checks pass, this is the response we are waiting for
+            console.log(`---> Matched Response URL: ${response.url()}`); // Add logging for debugging
             return true;
         },
+            // Optional: Add a timeout if needed, otherwise uses test timeout
+            // { timeout: 10000 }
         );
 
+        // *** Perform the actions that should trigger the network request ***
         await searchInput.click();
         await searchInput.fill(searchTerm);
+        // The fill action (often with a debounce) triggers the API call.
+        // The listener started above is now active and waiting.
 
+        // *** Wait for the API call (that was triggered by fill) to complete ***
         console.log('Waiting for API response...');
         const response = await responsePromise;
         console.log(`<<< Received API response: ${response.status()} ${response.url()}`);
 
+        // Parse the JSON body of the response
         const responseBody = await response.json();
 
-        expect(response.ok()).toBeTruthy();
-        expect(responseBody?.data?.docs).toBeDefined();
+        // *** Assertion 2: Verify relevance based on 'expertises', 'name', or 'roleName' ***
+        expect(response.ok()).toBeTruthy(); // Ensure the specific response we waited for was successful
+        expect(responseBody?.data?.docs).toBeDefined(); // Basic structure check
         expect(Array.isArray(responseBody.data.docs)).toBe(true);
 
+        // Ensure there are results before iterating
         expect(responseBody.data.docs.length).toBeGreaterThan(0);
 
         for (const doc of responseBody.data.docs) {
             expect(doc).toBeDefined();
             const hasMatchingExpertise = doc.expertises?.some(expertise =>
                 expertise?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-            ) ?? false;
+            ) ?? false; // Use optional chaining and nullish coalescing for safety
 
             const nameMatches = doc.name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false;
             const roleMatches = doc.roleName?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false;
 
+            // Assert that *at least one* of these conditions is true for *each* returned mentor
             expect(
                 hasMatchingExpertise || nameMatches || roleMatches,
                 `Mentor ${doc.name} (ID: ${doc.id}) in the response should have expertise, name, or role relevant to "${searchTerm}". Found: expertises=${JSON.stringify(doc.expertises)}, name=${doc.name}, role=${doc.roleName}`
@@ -116,6 +135,7 @@ test.describe('Mentor Discovery', {
         let keyword = "University of Indonesia";
         await page.goto('/mentoring');
 
+        // Click on the "Akademik (S1 & S2)" link
         await expect(clickAndCheckTab(page, 'Akademik (S1 & S2)')).toBeTruthy();
 
         await page.locator(
@@ -149,6 +169,7 @@ test.describe('Mentor Discovery', {
         let find_textbox = "//input[@id='searchMentor']";
         await page.goto('/mentoring');
 
+        // Click on the "Akademik (S1 & S2)" link
         await expect(clickAndCheckTab(page, 'Akademik (S1 & S2)')).toBeTruthy();
 
         let major_icon = page.locator(`//a[starts-with(@href, '/mentoring/')]//*[name()="svg"]/*[name()="g"][@clip-path="url(#clip0_2002_7835)"]`)
@@ -168,45 +189,68 @@ test.describe('Mentor Discovery', {
 
         await page.goto('/mentoring');
 
+        // *** Start waiting for the specific response BEFORE the actions that trigger it ***
         const responsePromise = page.waitForResponse(response => {
-            const url = new URL(response.url());
+            // 1. Check if the URL path matches exactly
+            const url = new URL(response.url()); // Use URL object for easier parsing
             if (url.pathname !== expectedApiUrlPath) {
-                return false;
+                return false; // Not the correct API endpoint path
             }
 
+            // // 2. Check if the search parameter matches the term we entered
+            // // Use searchParams.get() for reliable parameter checking
+            // if (url.searchParams.get('search')?.toLowerCase() !== searchTerm.toLowerCase()) {
+            //     return false; // Search term doesn't match what we typed
+            // }
 
+            // 3. Optional: Check method and status
             if (response.request().method() !== 'GET') {
-                return false;
+                return false; // Not a GET request
             }
+            // We might want to wait even if the response is not ok() yet,
+            // and check ok() status later in the assertions.
+            // But filtering here ensures we wait *only* for a successful search request.
             if (!response.ok()) {
-                return false;
+                return false; // Not a successful response (2xx status)
             }
 
-            console.log(`---> Matched Response URL: ${response.url()}`);
+            // If all checks pass, this is the response we are waiting for
+            console.log(`---> Matched Response URL: ${response.url()}`); // Add logging for debugging
             return true;
         },
+            // Optional: Add a timeout if needed, otherwise uses test timeout
+            // { timeout: 10000 }
         );
 
+        // *** Perform the actions that should trigger the network request ***
         await searchInput.click();
+        // await searchInput.fill(searchTerm);
+        // The fill action (often with a debounce) triggers the API call.
+        // The listener started above is now active and waiting.
 
+        // *** Wait for the API call (that was triggered by fill) to complete ***
         console.log('Waiting for API response...');
         const response = await responsePromise;
         console.log(`<<< Received API response: ${response.status()} ${response.url()}`);
 
+        // Parse the JSON body of the response
         const responseBody = await response.json();
 
-        expect(response.ok()).toBeTruthy();
-        expect(responseBody?.data?.docs).toBeDefined();
+        // *** Assertion 2: Verify relevance based on 'expertises', 'name', or 'roleName' ***
+        expect(response.ok()).toBeTruthy(); // Ensure the specific response we waited for was successful
+        expect(responseBody?.data?.docs).toBeDefined(); // Basic structure check
         expect(Array.isArray(responseBody.data.docs)).toBe(true);
 
+        // Ensure there are results before iterating
         expect(responseBody.data.docs.length).toBeGreaterThan(0);
 
         for (const doc of responseBody.data.docs) {
             expect(doc).toBeDefined();
             const hasMatchingExpertise = doc.expertises?.some(expertise =>
                 expertise?.category?.name.toLowerCase().includes(searchTerm.toLowerCase())
-            ) ?? false;
+            ) ?? false; // Use optional chaining and nullish coalescing for safety
 
+            // Assert that *at least one* of these conditions is true for *each* returned mentor
             expect(
                 hasMatchingExpertise,
                 `Mentor ${doc.name} (ID: ${doc.id}) in the response should have expertise, name, or role relevant to "${searchTerm}". Found: expertises=${JSON.stringify(doc.expertises)}`
@@ -227,48 +271,71 @@ test.describe('Mentor Discovery', {
         const regex = /mCategory=(.*?)(?:&|$)/;
         const match = searchInputHref.match(regex);
         const searchInputUUID = match ? match[1] : null;
-        console.log(`[DEBUG] Search input UUID: ${searchInputUUID}`)
+        console.log(`Search input UUID: ${searchInputUUID}`)
         expect(searchInputUUID).not.toBeNull();
 
+        // *** Start waiting for the specific response BEFORE the actions that trigger it ***
         const responsePromise = page.waitForResponse(response => {
-            const url = new URL(response.url());
+            // 1. Check if the URL path matches exactly
+            const url = new URL(response.url()); // Use URL object for easier parsing
             if (url.pathname !== expectedApiUrlPath) {
-                return false;
+                return false; // Not the correct API endpoint path
             }
 
+            // // 2. Check if the search parameter matches the term we entered
+            // // Use searchParams.get() for reliable parameter checking
+            // if (url.searchParams.get('search')?.toLowerCase() !== searchTerm.toLowerCase()) {
+            //     return false; // Search term doesn't match what we typed
+            // }
 
+            // 3. Optional: Check method and status
             if (response.request().method() !== 'GET') {
-                return false;
+                return false; // Not a GET request
             }
+            // We might want to wait even if the response is not ok() yet,
+            // and check ok() status later in the assertions.
+            // But filtering here ensures we wait *only* for a successful search request.
             if (!response.ok()) {
-                return false;
+                return false; // Not a successful response (2xx status)
             }
 
-            console.log(`---> Matched Response URL: ${response.url()}`);
+            // If all checks pass, this is the response we are waiting for
+            console.log(`---> Matched Response URL: ${response.url()}`); // Add logging for debugging
             return true;
         },
+            // Optional: Add a timeout if needed, otherwise uses test timeout
+            // { timeout: 10000 }
         );
 
+        // *** Perform the actions that should trigger the network request ***
         await searchInput.click();
+        // await searchInput.fill(searchTerm);
+        // The fill action (often with a debounce) triggers the API call.
+        // The listener started above is now active and waiting.
 
+        // *** Wait for the API call (that was triggered by fill) to complete ***
         console.log('Waiting for API response...');
         const response = await responsePromise;
         console.log(`<<< Received API response: ${response.status()} ${response.url()}`);
 
+        // Parse the JSON body of the response
         const responseBody = await response.json();
 
-        expect(response.ok()).toBeTruthy();
-        expect(responseBody?.data?.docs).toBeDefined();
+        // *** Assertion 2: Verify relevance based on 'expertises', 'name', or 'roleName' ***
+        expect(response.ok()).toBeTruthy(); // Ensure the specific response we waited for was successful
+        expect(responseBody?.data?.docs).toBeDefined(); // Basic structure check
         expect(Array.isArray(responseBody.data.docs)).toBe(true);
 
+        // Ensure there are results before iterating
         expect(responseBody.data.docs.length).toBeGreaterThan(0);
 
         for (const doc of responseBody.data.docs) {
             expect(doc).toBeDefined();
             const resultMatching = doc.academicExpertiseCategoryIds?.some(category =>
                 category?.includes(searchInputUUID)
-            ) ?? false;
+            ) ?? false; // Use optional chaining and nullish coalescing for safety
 
+            // Assert that *at least one* of these conditions is true for *each* returned mentor
             expect(
                 resultMatching,
                 `Mentor ${doc.name} (ID: ${doc.id}) in the response should have expertise, name, or role relevant to "${searchInputUUID}". Found: ${resultMatching} in ${JSON.stringify(doc.expertises)}`
@@ -281,38 +348,56 @@ test.describe('Mentor Discovery', {
         await page.goto('/mentoring');
         const expectedApiUrlPath = '/v2/mentoring/mentor/list';
 
+        // *** Start waiting for the specific response BEFORE the actions that trigger it ***
         const responsePromise = page.waitForResponse(response => {
-            const url = new URL(response.url());
+            // 1. Check if the URL path matches exactly
+            const url = new URL(response.url()); // Use URL object for easier parsing
             if (url.pathname !== expectedApiUrlPath) {
-                return false;
+                return false; // Not the correct API endpoint path
             }
 
+            // // 2. Check if the search parameter matches the term we entered
+            // // Use searchParams.get() for reliable parameter checking
+            // if (url.searchParams.get('search')?.toLowerCase() !== searchTerm.toLowerCase()) {
+            //     return false; // Search term doesn't match what we typed
+            // }
 
+            // 3. Optional: Check method and status
             if (response.request().method() !== 'GET') {
-                return false;
+                return false; // Not a GET request
             }
+            // We might want to wait even if the response is not ok() yet,
+            // and check ok() status later in the assertions.
+            // But filtering here ensures we wait *only* for a successful search request.
             if (!response.ok()) {
-                return false;
+                return false; // Not a successful response (2xx status)
             }
 
-            console.log(`---> Matched Response URL: ${response.url()}`);
+            // If all checks pass, this is the response we are waiting for
+            console.log(`---> Matched Response URL: ${response.url()}`); // Add logging for debugging
             return true;
         },
+            // Optional: Add a timeout if needed, otherwise uses test timeout
+            // { timeout: 10000 }
         );
 
         await page.locator('div').filter({ hasText: /^Ketersediaan Terdekat$/ }).nth(2).click();
         await page.getByText('Terbaru', { exact: true }).click();
 
+        // *** Wait for the API call (that was triggered by fill) to complete ***
         console.log('Waiting for API response...');
         const response = await responsePromise;
         console.log(`<<< Received API response: ${response.status()} ${response.url()}`);
 
+        // Parse the JSON body of the response
         const responseBody = await response.json();
 
-        expect(response.ok()).toBeTruthy();
-        expect(responseBody?.data?.docs).toBeDefined();
+        // *** Assertion 2: Verify relevance based on 'expertises', 'name', or 'roleName' ***
+        expect(response.ok()).toBeTruthy(); // Ensure the specific response we waited for was successful
+        expect(responseBody?.data?.docs).toBeDefined(); // Basic structure check
         expect(Array.isArray(responseBody.data.docs)).toBe(true);
 
+        // Ensure there are results before iterating
         expect(responseBody.data.docs.length).toBeGreaterThan(0);
 
         const createdAtList = [];
@@ -321,6 +406,7 @@ test.describe('Mentor Discovery', {
             createdAtList.push(doc.createdAt);
         }
 
+        // Verify that the createdAt values are sorted from latest to earliest
         for (let i = 1; i < createdAtList.length; i++) {
             expect(new Date(createdAtList[i - 1]).getTime()).toBeGreaterThanOrEqual(new Date(createdAtList[i]).getTime(),
                 `createdAt values are not sorted correctly. ${createdAtList[i - 1]} should be >= ${createdAtList[i]}`);
