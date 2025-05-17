@@ -6,3 +6,4 @@ node_modules/
 /playwright/.cache/
 tests/example.spec.js
 tests-examples/demo-todo-app.spec.js
+.github/workflows/local.yml

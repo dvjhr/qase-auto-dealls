@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { clickAndCheckTab } from './helpers/mentoring.js';
+import { time } from 'console';
 
 test.describe('Mentor Discovery', {
     tag: ['@mentoring', '@mentor_discovery'],
@@ -224,6 +225,11 @@ test.describe('Mentor Discovery', {
 
         // *** Perform the actions that should trigger the network request ***
         await searchInput.click();
+        console.log(`Search input class: ${await searchInput.getAttribute('class')}`);
+        await page.waitForURL('**/mentoring?mCategory=*');
+        await expect(page.url()).toContain('mCategory');
+        await page.waitForLoadState()
+        // await expect(await searchInput.getAttribute('class')).toContain('text-tertiary-violet-50');
         // await searchInput.fill(searchTerm);
         // The fill action (often with a debounce) triggers the API call.
         // The listener started above is now active and waiting.
